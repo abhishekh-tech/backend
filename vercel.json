@@ -11,12 +11,5 @@
       "src": "/api/(.*)",
       "dest": "/api/$1"
     }
-  ],
-  "env": {
-    "DB_USERNAME": "@db_username",
-    "DB_PASSWORD": "@db_password",
-    "JWT_SECRET": "@jwt_secret",
-    "NODE_ENV": "production",
-    "FRONTEND_URL": "@frontend_url"
-  }
+  ]
 }
