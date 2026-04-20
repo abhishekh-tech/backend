@@ -79,7 +79,10 @@ const downloadCourseContent = async (req, res) => {
 
 const streamCourseContent = async (req, res) => {
   try {
-    const course = await courseService.getCourseById(req.params.id);
+    // Optimization: Only fetch the 'content' field to reduce DB overhead
+    const Course = require('../models/Course');
+    const course = await Course.findById(req.params.id).select('content');
+    
     if (!course || !course.content || !course.content.fileData) {
       console.log(`[Stream] Course content not found for ID: ${req.params.id}`);
       return res.status(404).json({ message: 'File not found' });
@@ -91,8 +94,10 @@ const streamCourseContent = async (req, res) => {
 
     console.log(`[Stream] Serving: ${fileName} (${mimeType}), Size: ${fileSize} bytes, Range: ${range || 'none'}`);
 
+    // Set standard headers for file streaming
     res.setHeader('Content-Disposition', 'inline');
     res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Content-Type', mimeType);
 
     if (range) {
       const parts = range.replace(/bytes=/, '').split('-');
@@ -108,17 +113,12 @@ const streamCourseContent = async (req, res) => {
       res.writeHead(206, {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Content-Length': chunksize,
-        'Content-Type': mimeType,
       });
 
       res.end(fileData.slice(start, end + 1));
     } else {
-      res.writeHead(200, {
-        'Content-Length': fileSize,
-        'Content-Type': mimeType,
-      });
-
-      res.end(fileData);
+      res.setHeader('Content-Length', fileSize);
+      res.status(200).send(fileData);
     }
   } catch (err) {
     console.error(`[Stream Error] ${err.message}`);
