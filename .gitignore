@@ -29,3 +29,4 @@ dist/
 build/
 .vercel
 .env*.local
+.env.example
