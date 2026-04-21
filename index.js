@@ -10,7 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://frontend-f63r-jrs5mox87-abhishekh-redmen-team.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json()); // Allows parsing of JSON request bodies
 
 const { DB_USERNAME, DB_PASSWORD } = process.env;
