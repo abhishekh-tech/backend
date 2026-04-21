@@ -9,8 +9,7 @@ const skillController = require('../controllers/skillController');
 const { withAuth } = require('./helpers');
 
 module.exports = async (req, res) => {
-  await connectToDatabase();
-
+  // Set CORS headers immediately for all requests including OPTIONS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -19,10 +18,13 @@ module.exports = async (req, res) => {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
   );
 
+  // Handle OPTIONS preflight request immediately
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
+
+  await connectToDatabase();
 
   try {
     const { url, query } = req;
