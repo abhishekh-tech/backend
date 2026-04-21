@@ -9,10 +9,19 @@ const skillController = require('../controllers/skillController');
 const { withAuth } = require('./helpers');
 
 module.exports = async (req, res) => {
-  // ✅ FIXED CORS CONFIG
-  const allowedOrigin = 'https://frontend-f63r-jrs5mox87-abhishekh-redmen-team.vercel.app';
 
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+  // ✅ FINAL CORS FIX (supports production + preview)
+  const allowedOrigins = [
+    'https://frontend-f63r.vercel.app',
+    'https://frontend-f63r-jrs5mox87-abhishekh-redmen-team.vercel.app'
+  ];
+
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader(
@@ -20,9 +29,9 @@ module.exports = async (req, res) => {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
   );
 
-  // ✅ HANDLE PREFLIGHT PROPERLY
+  // ✅ Handle preflight request
   if (req.method === 'OPTIONS') {
-    return res.status(200).json({});
+    return res.status(200).end();
   }
 
   await connectToDatabase();
@@ -31,7 +40,7 @@ module.exports = async (req, res) => {
     const { url, query } = req;
     const method = req.method;
 
-    // Parse body if string
+    // Parse body if needed
     if (req.body && typeof req.body === 'string') {
       try {
         req.body = JSON.parse(req.body);
