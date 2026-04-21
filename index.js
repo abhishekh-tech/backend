@@ -15,6 +15,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
+app.options('*', cors());
+
 app.use(express.json()); // Allows parsing of JSON request bodies
 
 const { DB_USERNAME, DB_PASSWORD } = process.env;
