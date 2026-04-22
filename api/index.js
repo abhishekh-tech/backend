@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
   origin: ['https://frontend-f63r-jrs5mox87-abhishekh-redmen-team.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
 
@@ -34,6 +34,7 @@ const connectToDatabase = async () => {
     console.log("DB Connected Successfully");
   } catch (err) {
     console.log("DB Connection Error", err);
+    throw err;
   }
 };
 
@@ -53,6 +54,11 @@ app.get('/', (req, res) => {
 
 // Export for Vercel serverless
 module.exports = async (req, res) => {
-  await connectToDatabase();
-  return app(req, res);
+  try {
+    await connectToDatabase();
+    return app(req, res);
+  } catch (error) {
+    console.error('Serverless function error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
 };
