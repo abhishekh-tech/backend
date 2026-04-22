@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'https://frontend-f63r-jrs5mox87-abhishekh-redmen-team.vercel.app',
+  origin: ['https://frontend-f63r.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
